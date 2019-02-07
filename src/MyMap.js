@@ -6,8 +6,11 @@ import { Map, View } from 'ol';
 import * as source from 'ol/source';
 import * as format from 'ol/format';
 import * as layer from 'ol/layer';
-import * as proj from 'ol/proj';
+import { transformExtent, fromLonLat } from 'ol/proj';
 import * as geom from 'ol/geom';
+import * as style from 'ol/style';
+import TileGrid from 'ol/tilegrid/TileGrid';
+import * as loadingstrategy from 'ol/loadingstrategy';
 import { optionsFromCapabilities } from 'ol/source/WMTS';
 
 import 'ol/ol.css';
@@ -17,6 +20,19 @@ export class MyMap extends React.Component {
  
   componentDidMount() {
 
+    // Weirdness adapted from https://beta-karttakuva.maanmittauslaitos.fi/demo/WGS84_Pseudo-Mercator_featuretiles_WFS3/index.html
+    var osmTileGrid = new source.OSM().tileGrid;
+    var origin = osmTileGrid.getOrigin(0);
+    var resolutions = [osmTileGrid.getResolutions()[15]];
+
+    var myLargerTileGrid = new TileGrid({
+        origin: origin,
+        resolutions: resolutions,
+        tileSize: 512
+    });
+
+
+
     // create feature layer and vector source
     var featuresLayer = new layer.Vector({
       source: new source.Vector({
@@ -24,14 +40,39 @@ export class MyMap extends React.Component {
       })
     });
 
+    var parcelsSource = new source.Vector({
+      format: new format.GeoJSON(),
+      strategy: new loadingstrategy.tile(myLargerTileGrid),
+      url: function(extent, resolution, proj) {
+        return 'https://beta-karttakuva.maanmittauslaitos.fi/wfs3/collections/parcels/items?limit=15000&bbox='
+                + transformExtent(extent, 'EPSG:3857', 'EPSG:4326').join(',');
+      }
+    });
+
+    var parcelsStyle = new style.Style({
+      stroke: new style.Stroke({
+        color: 'rgba(255, 0, 0, 0.75)',
+        width: 1,
+        lineDash: [8, 8]
+      }),
+    });
+
+    var parcelsLayer = new layer.Vector({
+      source: parcelsSource,
+      style: parcelsStyle,
+      maxResolution: 11
+    });
+
+
     // create map object with feature layer
     var map = new Map({
       target: this.refs.mapContainer,
       layers: [
-        featuresLayer
+        featuresLayer,
+        parcelsLayer
       ],
       view: new View({
-        center: proj.fromLonLat([24.95, 60.23]),
+        center: fromLonLat([24.95, 60.23]),
         zoom: 11,
         minZoom: 8,
         maxZoom: 20
