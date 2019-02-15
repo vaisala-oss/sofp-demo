@@ -13,7 +13,12 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import * as loadingstrategy from 'ol/loadingstrategy';
 import { optionsFromCapabilities } from 'ol/source/WMTS';
 
+import * as _ from 'lodash';
+
+import * as moment from 'moment';
+
 import 'ol/ol.css';
+
 
 // Adapted from https://taylor.callsen.me/using-reactflux-with-openlayers-3-and-other-third-party-libraries/
 export class MyMap extends React.Component {
@@ -23,7 +28,7 @@ export class MyMap extends React.Component {
     // Weirdness adapted from https://beta-karttakuva.maanmittauslaitos.fi/demo/WGS84_Pseudo-Mercator_featuretiles_WFS3/index.html
     var osmTileGrid = new source.OSM().tileGrid;
     var origin = osmTileGrid.getOrigin(0);
-    var resolutions = [osmTileGrid.getResolutions()[15]];
+    var resolutions = [osmTileGrid.getResolutions()[8]];
 
     var myLargerTileGrid = new TileGrid({
         origin: origin,
@@ -40,27 +45,64 @@ export class MyMap extends React.Component {
       })
     });
 
-    var parcelsSource = new source.Vector({
+    var weatherSource = new source.Vector({
       format: new format.GeoJSON(),
       strategy: new loadingstrategy.tile(myLargerTileGrid),
-      url: function(extent, resolution, proj) {
-        return 'https://beta-karttakuva.maanmittauslaitos.fi/wfs3/collections/parcels/items?limit=15000&bbox='
-                + transformExtent(extent, 'EPSG:3857', 'EPSG:4326').join(',');
+      loader: function(extent, resolution, proj) {
+        const time = {
+          end: moment.utc()
+        };
+        time.start = moment.utc(time.end).add(-1, 'hours');
+
+        const url = 
+          'http://beta.fmi.fi/data/3/wfs/sofp/collections/opendata_1m/items?'+
+          [
+            'ParameterName=Temperature',
+            'time='+time.start.toISOString()+'/'+time.end.toISOString(),
+            'bbox='+transformExtent(extent, 'EPSG:3857', 'EPSG:4326').join(','),
+            'limit=100'
+          ].join('&');
+
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        var onError = function() {
+          weatherSource.removeLoadedExtent(extent);
+        }
+        xhr.onerror = onError;
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            const json = JSON.parse(xhr.responseText);
+            
+            _.each(json.features, f => {
+              f.type = 'Feature';
+            });
+            const features = weatherSource.getFormat().readFeatures(json, {
+              dataProjection: 'EPSG:4326',
+              featureProjection: 'EPSG:3857'
+            });
+
+            weatherSource.addFeatures(features);
+          } else {
+             onError();
+          }
+        }
+        xhr.send();
       }
     });
 
-    var parcelsStyle = new style.Style({
-      stroke: new style.Stroke({
-        color: 'rgba(255, 0, 0, 0.75)',
-        width: 1,
-        lineDash: [8, 8]
-      }),
-    });
-
-    var parcelsLayer = new layer.Vector({
-      source: parcelsSource,
-      style: parcelsStyle,
-      maxResolution: 11
+    var pointStyle = new style.Style({
+      image: new style.Circle({
+        radius: 7,
+        fill: new style.Fill({color: 'black'}),
+        stroke: new style.Stroke({
+          color: [255,0,0], width: 2
+        })
+      })
+    })
+    var weatherLayer = new layer.Vector({
+      source: weatherSource,
+      style: pointStyle
     });
 
 
@@ -69,7 +111,7 @@ export class MyMap extends React.Component {
       target: this.refs.mapContainer,
       layers: [
         featuresLayer,
-        parcelsLayer
+        weatherLayer
       ],
       view: new View({
         center: fromLonLat([24.95, 60.23]),
