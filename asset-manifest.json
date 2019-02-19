@@ -1,0 +1,15 @@
+{
+  "main.css": "/sofp-demo/static/css/main.e8f3b901.chunk.css",
+  "main.js": "/sofp-demo/static/js/main.d8320c02.chunk.js",
+  "main.js.map": "/sofp-demo/static/js/main.d8320c02.chunk.js.map",
+  "static/css/1.f5dbbc9b.chunk.css": "/sofp-demo/static/css/1.f5dbbc9b.chunk.css",
+  "static/js/1.876c3ced.chunk.js": "/sofp-demo/static/js/1.876c3ced.chunk.js",
+  "static/js/1.876c3ced.chunk.js.map": "/sofp-demo/static/js/1.876c3ced.chunk.js.map",
+  "runtime~main.js": "/sofp-demo/static/js/runtime~main.2c3ede19.js",
+  "runtime~main.js.map": "/sofp-demo/static/js/runtime~main.2c3ede19.js.map",
+  "static/css/1.f5dbbc9b.chunk.css.map": "/sofp-demo/static/css/1.f5dbbc9b.chunk.css.map",
+  "static/css/main.e8f3b901.chunk.css.map": "/sofp-demo/static/css/main.e8f3b901.chunk.css.map",
+  "index.html": "/sofp-demo/index.html",
+  "precache-manifest.caf86e2ee41c4395548e09d56a790d01.js": "/sofp-demo/precache-manifest.caf86e2ee41c4395548e09d56a790d01.js",
+  "service-worker.js": "/sofp-demo/service-worker.js"
+}
