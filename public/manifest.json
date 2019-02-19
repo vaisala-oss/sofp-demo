@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "SOFP Demo",
+  "name": "Simple Observations Feature Pilot demo server using data from fmi.fi",
   "icons": [
     {
       "src": "favicon.ico",
