@@ -24,8 +24,6 @@ import 'ol/ol.css';
 export class MyMap extends React.Component {
  
   componentDidMount() {
-
-    // Weirdness adapted from https://beta-karttakuva.maanmittauslaitos.fi/demo/WGS84_Pseudo-Mercator_featuretiles_WFS3/index.html
     var osmTileGrid = new source.OSM().tileGrid;
     var origin = osmTileGrid.getOrigin(0);
     var resolutions = [osmTileGrid.getResolutions()[8]];
@@ -35,8 +33,6 @@ export class MyMap extends React.Component {
         resolutions: resolutions,
         tileSize: 512
     });
-
-
 
     // create feature layer and vector source
     var featuresLayer = new layer.Vector({
@@ -52,7 +48,7 @@ export class MyMap extends React.Component {
         const time = {
           end: moment.utc()
         };
-        time.start = moment.utc(time.end).add(-1, 'hours');
+        time.start = moment.utc(time.end).add(-1, 'days');
 
         const url = 
           'http://beta.fmi.fi/data/3/wfs/sofp/collections/opendata_1m/items?'+
@@ -72,12 +68,7 @@ export class MyMap extends React.Component {
         xhr.onerror = onError;
         xhr.onload = function() {
           if (xhr.status === 200) {
-            const json = JSON.parse(xhr.responseText);
-            
-            _.each(json.features, f => {
-              f.type = 'Feature';
-            });
-            const features = weatherSource.getFormat().readFeatures(json, {
+            const features = weatherSource.getFormat().readFeatures(xhr.responseText, {
               dataProjection: 'EPSG:4326',
               featureProjection: 'EPSG:3857'
             });
@@ -96,7 +87,7 @@ export class MyMap extends React.Component {
         radius: 7,
         fill: new style.Fill({color: 'black'}),
         stroke: new style.Stroke({
-          color: [255,0,0], width: 2
+          color: [250, 210, 210], width: 2
         })
       })
     })
@@ -167,6 +158,9 @@ export class MyMap extends React.Component {
     // create Point geometry from clicked coordinate
     var clickedPointGeom = new geom.Point( clickedCoordinate );
     console.log(clickedPointGeom);
+    console.log(event);
+
+    // TODO: show data
   }
 
   render () {
