@@ -13,8 +13,6 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import * as loadingstrategy from 'ol/loadingstrategy';
 import { optionsFromCapabilities } from 'ol/source/WMTS';
 
-import * as _ from 'lodash';
-
 import * as moment from 'moment';
 
 import 'ol/ol.css';
@@ -51,6 +49,8 @@ export class MyMap extends React.Component {
         time.start = moment.utc(time.end).add(-1, 'days');
 
         const url = 
+          // This is a nasty hack to get around beta.fmi.fi's lack of HTTPS support
+          'https://cors-anywhere.herokuapp.com/' +
           'http://beta.fmi.fi/data/3/wfs/sofp/collections/opendata_1m/items?'+
           [
             'ParameterName=Temperature',
