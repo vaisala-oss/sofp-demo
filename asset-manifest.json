@@ -1,15 +1,15 @@
 {
   "main.css": "/sofp-demo/static/css/main.7bc6b690.chunk.css",
-  "main.js": "/sofp-demo/static/js/main.97f5302a.chunk.js",
-  "main.js.map": "/sofp-demo/static/js/main.97f5302a.chunk.js.map",
+  "main.js": "/sofp-demo/static/js/main.4b975bbb.chunk.js",
+  "main.js.map": "/sofp-demo/static/js/main.4b975bbb.chunk.js.map",
   "static/css/1.b8d1cadd.chunk.css": "/sofp-demo/static/css/1.b8d1cadd.chunk.css",
   "static/js/1.2bd70dac.chunk.js": "/sofp-demo/static/js/1.2bd70dac.chunk.js",
   "static/js/1.2bd70dac.chunk.js.map": "/sofp-demo/static/js/1.2bd70dac.chunk.js.map",
   "runtime~main.js": "/sofp-demo/static/js/runtime~main.2c3ede19.js",
   "runtime~main.js.map": "/sofp-demo/static/js/runtime~main.2c3ede19.js.map",
-  "static/css/main.7bc6b690.chunk.css.map": "/sofp-demo/static/css/main.7bc6b690.chunk.css.map",
   "static/css/1.b8d1cadd.chunk.css.map": "/sofp-demo/static/css/1.b8d1cadd.chunk.css.map",
+  "static/css/main.7bc6b690.chunk.css.map": "/sofp-demo/static/css/main.7bc6b690.chunk.css.map",
   "index.html": "/sofp-demo/index.html",
-  "precache-manifest.c93dd15651e1df95129dc3620c61518f.js": "/sofp-demo/precache-manifest.c93dd15651e1df95129dc3620c61518f.js",
+  "precache-manifest.2f72ef4dd48e259e53e3f286a10cd815.js": "/sofp-demo/precache-manifest.2f72ef4dd48e259e53e3f286a10cd815.js",
   "service-worker.js": "/sofp-demo/service-worker.js"
 }
