@@ -183,7 +183,7 @@ export class MyMap extends React.Component {
     var coordinate = evt.coordinate;
     var ext = extent.boundingExtent([coordinate]);
 
-    ext = extent.buffer(ext, 500);
+    ext = extent.buffer(ext, 7 * this.state.map.getView().getResolution());
 
     popup.features = this.state.weatherSource.getFeaturesInExtent(ext);
     popup.temperatureChart = {};
