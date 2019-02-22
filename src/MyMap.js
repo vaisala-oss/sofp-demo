@@ -185,17 +185,17 @@ export class MyMap extends React.Component {
 
     ext = extent.buffer(ext, 500);
 
-    var features = this.state.weatherSource.getFeaturesInExtent(ext);
-    if (features.length === 0) {
+    popup.features = this.state.weatherSource.getFeaturesInExtent(ext);
+    popup.temperatureChart = {};
+    if (popup.features.length === 0) {
       this.state.popupCloser.onclick();
       return;
     }
 
     popup.hdms = toStringHDMS(toLonLat(coordinate));
-    popup.features = _.sortBy(features, f => { console.log(f); return f.values_.resultTime; });
-
+    
     popup.temperatureChart = _.reduce(popup.features, (memo, f) => { memo[f.values_.resultTime] = f.values_.result; return memo;}, {});
-console.log(popup.temperatureChart);
+
     this.state.overlay.setPosition(coordinate);
     this.setState({ popup });
   }
