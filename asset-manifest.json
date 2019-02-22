@@ -1,7 +1,7 @@
 {
   "main.css": "/sofp-demo/static/css/main.7bc6b690.chunk.css",
-  "main.js": "/sofp-demo/static/js/main.4b975bbb.chunk.js",
-  "main.js.map": "/sofp-demo/static/js/main.4b975bbb.chunk.js.map",
+  "main.js": "/sofp-demo/static/js/main.0bb5d51e.chunk.js",
+  "main.js.map": "/sofp-demo/static/js/main.0bb5d51e.chunk.js.map",
   "static/css/1.b8d1cadd.chunk.css": "/sofp-demo/static/css/1.b8d1cadd.chunk.css",
   "static/js/1.2bd70dac.chunk.js": "/sofp-demo/static/js/1.2bd70dac.chunk.js",
   "static/js/1.2bd70dac.chunk.js.map": "/sofp-demo/static/js/1.2bd70dac.chunk.js.map",
@@ -10,6 +10,6 @@
   "static/css/1.b8d1cadd.chunk.css.map": "/sofp-demo/static/css/1.b8d1cadd.chunk.css.map",
   "static/css/main.7bc6b690.chunk.css.map": "/sofp-demo/static/css/main.7bc6b690.chunk.css.map",
   "index.html": "/sofp-demo/index.html",
-  "precache-manifest.2f72ef4dd48e259e53e3f286a10cd815.js": "/sofp-demo/precache-manifest.2f72ef4dd48e259e53e3f286a10cd815.js",
+  "precache-manifest.0fc6f107ca6fbf6b73b1559e93c1c1d9.js": "/sofp-demo/precache-manifest.0fc6f107ca6fbf6b73b1559e93c1c1d9.js",
   "service-worker.js": "/sofp-demo/service-worker.js"
 }
