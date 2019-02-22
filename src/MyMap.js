@@ -83,7 +83,7 @@ export class MyMap extends React.Component {
 
         const url = 
           // This is a nasty hack to get around beta.fmi.fi's lack of HTTPS support
-          //'https://cors-anywhere.herokuapp.com/' +
+          'https://cors-anywhere.herokuapp.com/' +
           'http://beta.fmi.fi/data/3/wfs/sofp/collections/opendata_1h/items?'+
           [
             'observedPropertyName=Temperature',
