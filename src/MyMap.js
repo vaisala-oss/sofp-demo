@@ -7,7 +7,6 @@ import * as source from 'ol/source';
 import * as format from 'ol/format';
 import * as layer from 'ol/layer';
 import { transformExtent, fromLonLat, toLonLat } from 'ol/proj';
-import * as geom from 'ol/geom';
 import * as style from 'ol/style';
 import * as extent from 'ol/extent';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -17,6 +16,9 @@ import { optionsFromCapabilities } from 'ol/source/WMTS';
 import Overlay from 'ol/Overlay';
 import {toStringHDMS} from 'ol/coordinate.js';
 
+import ReactChartkick, { LineChart } from 'react-chartkick'
+import Chart from 'chart.js'
+
 import * as moment from 'moment';
 
 import * as _ from 'lodash';
@@ -24,6 +26,7 @@ import * as _ from 'lodash';
 import 'ol/ol.css';
 import './MyMap.css';
 
+ReactChartkick.addAdapter(Chart);
 
 // Adapted from https://taylor.callsen.me/using-reactflux-with-openlayers-3-and-other-third-party-libraries/
 export class MyMap extends React.Component {
@@ -34,7 +37,8 @@ export class MyMap extends React.Component {
       map: null,
       popup: {
         hdms: null,
-        features: []
+        features: [],
+        temperatureChart: {}
       }
     }
   }
@@ -45,7 +49,6 @@ export class MyMap extends React.Component {
     var resolutions = [osmTileGrid.getResolutions()[8]];
 
     const popupContainer = this.refs.mapPopup;
-    const popupContent = this.refs.mapPopupContent;
     const popupCloser = this.refs.mapPopupCloser;
     
     var overlay = new Overlay({
@@ -183,7 +186,7 @@ export class MyMap extends React.Component {
     ext = extent.buffer(ext, 500);
 
     var features = this.state.weatherSource.getFeaturesInExtent(ext);
-    if (features.length == 0) {
+    if (features.length === 0) {
       this.state.popupCloser.onclick();
       return;
     }
@@ -191,6 +194,8 @@ export class MyMap extends React.Component {
     popup.hdms = toStringHDMS(toLonLat(coordinate));
     popup.features = _.sortBy(features, f => { console.log(f); return f.values_.resultTime; });
 
+    popup.temperatureChart = _.reduce(popup.features, (memo, f) => { memo[f.values_.resultTime] = f.values_.result; return memo;}, {});
+console.log(popup.temperatureChart);
     this.state.overlay.setPosition(coordinate);
     this.setState({ popup });
   }
@@ -202,11 +207,12 @@ export class MyMap extends React.Component {
         </div>
         <div ref="mapPopup" id="popup" className="ol-popup">
           <a href="#close-popup" ref="mapPopupCloser" id="popup-closer" className="ol-popup-closer">&nbsp;</a>
-          <div ref="mapPopupContent" id="popup-content">
+          <div id="popup-content">
             <p>You clicked here:</p>
             <code>{this.state.popup.hdms}</code>
             <h3>Temperature</h3>
-            {this.state.popup.features.map(f => <p>{f.values_.resultTime} = {f.values_.result}</p>)}
+            <LineChart data={this.state.popup.temperatureChart} />
+            
           </div>
         </div>
       </div>
