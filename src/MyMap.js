@@ -9,6 +9,7 @@ import * as layer from 'ol/layer';
 import { transformExtent, fromLonLat, toLonLat } from 'ol/proj';
 import * as geom from 'ol/geom';
 import * as style from 'ol/style';
+import * as extent from 'ol/extent';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import * as loadingstrategy from 'ol/loadingstrategy';
 import { optionsFromCapabilities } from 'ol/source/WMTS';
@@ -18,6 +19,8 @@ import {toStringHDMS} from 'ol/coordinate.js';
 
 import * as moment from 'moment';
 
+import * as _ from 'lodash';
+
 import 'ol/ol.css';
 import './MyMap.css';
 
@@ -25,6 +28,17 @@ import './MyMap.css';
 // Adapted from https://taylor.callsen.me/using-reactflux-with-openlayers-3-and-other-third-party-libraries/
 export class MyMap extends React.Component {
  
+  constructor(props) {
+    super(props);
+    this.state = {
+      map: null,
+      popup: {
+        hdms: null,
+        features: []
+      }
+    }
+  }
+
   componentDidMount() {
     var osmTileGrid = new source.OSM().tileGrid;
     var origin = osmTileGrid.getOrigin(0);
@@ -62,17 +76,17 @@ export class MyMap extends React.Component {
         const time = {
           end: moment.utc()
         };
-        time.start = moment.utc(time.end).add(-1, 'days');
+        time.start = moment.utc(time.end).add(-2, 'days');
 
         const url = 
           // This is a nasty hack to get around beta.fmi.fi's lack of HTTPS support
           //'https://cors-anywhere.herokuapp.com/' +
-          'http://beta.fmi.fi/data/3/wfs/sofp/collections/opendata_1m/items?'+
+          'http://beta.fmi.fi/data/3/wfs/sofp/collections/opendata_1h/items?'+
           [
-            'ParameterName=Temperature',
+            'observedPropertyName=Temperature',
             'time='+time.start.toISOString()+'/'+time.end.toISOString(),
             'bbox='+transformExtent(extent, 'EPSG:3857', 'EPSG:4326').join(','),
-            'limit=100'
+            'limit=500'
           ].join('&');
 
 
@@ -148,22 +162,37 @@ export class MyMap extends React.Component {
     xhttp.open("GET", "https://avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/WMTSCapabilities.xml", true);
     xhttp.send();
 
-    map.on('singleclick', function(evt) {
-        var coordinate = evt.coordinate;
-        var hdms = toStringHDMS(toLonLat(coordinate));
 
-        popupContent.innerHTML = 
-            `<div>`+
-            `  <p>You clicked here:</p>`+
-            `  <code>${hdms}</code>`+
-            `</div>`;
-        overlay.setPosition(coordinate);
-    });
+    map.on('singleclick', this.openPopup.bind(this));
 
     // save map and layer references to local state
     this.setState({ 
-      map: map
+      map,
+      weatherSource,
+      popupCloser,
+      overlay
     });
+  }
+
+  openPopup(evt) {
+    const popup = this.state.popup;
+
+    var coordinate = evt.coordinate;
+    var ext = extent.boundingExtent([coordinate]);
+
+    ext = extent.buffer(ext, 500);
+
+    var features = this.state.weatherSource.getFeaturesInExtent(ext);
+    if (features.length == 0) {
+      this.state.popupCloser.onclick();
+      return;
+    }
+
+    popup.hdms = toStringHDMS(toLonLat(coordinate));
+    popup.features = _.sortBy(features, f => { console.log(f); return f.values_.resultTime; });
+
+    this.state.overlay.setPosition(coordinate);
+    this.setState({ popup });
   }
 
   render () {
@@ -173,7 +202,12 @@ export class MyMap extends React.Component {
         </div>
         <div ref="mapPopup" id="popup" className="ol-popup">
           <a href="#close-popup" ref="mapPopupCloser" id="popup-closer" className="ol-popup-closer">&nbsp;</a>
-          <div ref="mapPopupContent" id="popup-content"></div>
+          <div ref="mapPopupContent" id="popup-content">
+            <p>You clicked here:</p>
+            <code>{this.state.popup.hdms}</code>
+            <h3>Temperature</h3>
+            {this.state.popup.features.map(f => <p>{f.values_.resultTime} = {f.values_.result}</p>)}
+          </div>
         </div>
       </div>
     );
